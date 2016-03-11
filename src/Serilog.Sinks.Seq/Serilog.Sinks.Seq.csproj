@@ -57,6 +57,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FailoverSeqSink.cs" />
     <Compile Include="Sinks\Seq\DurableSeqSink.cs" />
     <Compile Include="Sinks\Seq\HttpLogShipper.cs" />
     <Compile Include="Sinks\Seq\SeqApi.cs" />
