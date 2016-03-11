@@ -2,29 +2,15 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using Serilog.Core;
 using Serilog.Events;
-using Serilog.Sinks.Seq;
 
-namespace Serilog
+namespace Serilog.Sinks.Seq
 {
-    /// <summary>
-    /// Sink uses non-durable for log entries.  If exception is thrown from Emit(), then LogEntry is sent to durable log shipper.
-    /// </summary>
-    class FailoverSeqSink : SeqSink, IDisposable
+    class FailoverSeqSink : SeqSink
     {
-        private readonly Lazy<DurableSeqSink> _durableSink; 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="serverUrl"></param>
-        /// <param name="bufferBaseFilename"></param>
-        /// <param name="apiKey"></param>
-        /// <param name="batchPostingLimit"></param>
-        /// <param name="batchPeriod"></param>
-        /// <param name="durableShipperPeriod"></param>
-        /// <param name="bufferFileSizeLimitBytes"></param>
-        public FailoverSeqSink(string serverUrl, string bufferBaseFilename, string apiKey, int batchPostingLimit, TimeSpan batchPeriod, TimeSpan durableShipperPeriod, long? bufferFileSizeLimitBytes)
+        private readonly Lazy<DurableSeqSink> _durableSink;
+
+        public FailoverSeqSink(string serverUrl, string bufferBaseFilename, string apiKey, int batchPostingLimit, TimeSpan batchPeriod, long? bufferFileSizeLimitBytes, TimeSpan durableShipperPeriod, LogEventLevel failoverRestrictedToMinimumLevel)
             :base(serverUrl, apiKey, batchPostingLimit, batchPeriod)
         {
             _durableSink = new Lazy<DurableSeqSink>(() => new DurableSeqSink(serverUrl, bufferBaseFilename, apiKey, batchPostingLimit, durableShipperPeriod, bufferFileSizeLimitBytes));
