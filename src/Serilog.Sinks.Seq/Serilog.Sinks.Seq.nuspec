@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
-    <id>Serilog.Sinks.Seq</id>
+    <id>Internal.Serilog.Sinks.Seq</id>
     <version>$version$</version>
     <authors>Serilog Contributors, Continuous IT Pty Ltd</authors>
     <description>Serilog sink that writes to the Seq event server over HTTP/S.</description>
@@ -10,10 +10,6 @@
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
     <iconUrl>http://serilog.net/images/serilog-sink-seq-nuget.png</iconUrl>
     <dependencies>
-      <group targetFramework="net40">
-        <dependency id="Serilog" version="1.5.10" />
-        <dependency id="Microsoft.Net.Http" version="2.2.20" />
-      </group>
       <group targetFramework="net45">
         <dependency id="Serilog" version="1.5.10" />
       </group>
@@ -24,8 +20,5 @@
     <file src="bin\Release\Serilog.Sinks.Seq.dll" target="lib\net45" />
     <file src="bin\Release\Serilog.Sinks.Seq.xml" target="lib\net45" />
     <file src="bin\Release\Serilog.Sinks.Seq.pdb" target="lib\net45" />
-    <file src="bin40\Release\Serilog.Sinks.Seq.dll" target="lib\net40" />
-    <file src="bin40\Release\Serilog.Sinks.Seq.xml" target="lib\net40" />
-    <file src="bin40\Release\Serilog.Sinks.Seq.pdb" target="lib\net40" />
   </files>
 </package>
