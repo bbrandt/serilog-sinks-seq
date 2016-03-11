@@ -36,6 +36,11 @@ function Invoke-NuGetPackSpec($nuspec, $version)
     nuget pack $nuspec -Version $version
 }
 
+function Invoke-NuGetPush($feedUrl)
+{
+    nuget push "*.Sinks.Seq.*.nupkg" -Source $feedUrl
+}
+
 function Invoke-Build($majorMinor, $patch, $customLogger, $notouch)
 {
     $project = "serilog-sinks-seq"
@@ -62,3 +67,4 @@ function Invoke-Build($majorMinor, $patch, $customLogger, $notouch)
 
 $ErrorActionPreference = "Stop"
 Invoke-Build $majorMinor $patch $customLogger $notouch
+Invoke-NuGetPush $env:nugetFeedUrl
