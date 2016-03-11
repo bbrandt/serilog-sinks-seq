@@ -42,7 +42,7 @@ namespace Serilog
         /// log file for a specific date will be allowed to grow. By default no limit will be applied.</param>
         /// <param name="failOverToDurable">True to failover to durable log shipper only when non-durable log shipping fails</param>
         /// <param name="failoverRestrictedToMinimumLevel">Min level to send to failover.  Ex: Send Debug to non-durable, but only failover Error and higher to durable</param>
-        /// <param name="failOverDurablePeriod"></param>
+        /// <param name="failOverDurablePeriod">Batching period for durable sink used for failover.  Null defaults to same as period.</param>
         /// <returns>Logger configuration, allowing configuration to continue.</returns>
         /// <exception cref="ArgumentNullException">A required parameter is null.</exception>
         public static LoggerConfiguration Seq(
@@ -63,7 +63,7 @@ namespace Serilog
             if (bufferFileSizeLimitBytes.HasValue && bufferFileSizeLimitBytes < 0) throw new ArgumentException("Negative value provided; file size limit must be non-negative");
 
             var defaultedPeriod = period ?? SeqSink.DefaultPeriod;
-            var failoverPeriod = failOverDurablePeriod ?? SeqSink.DefaultPeriod;
+            var failoverPeriod = failOverDurablePeriod ?? defaultedPeriod;
 
             ILogEventSink sink;
             if (failOverToDurable)
