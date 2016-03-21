@@ -40,6 +40,9 @@ namespace Serilog
         /// <param name="apiKey">A Seq <i>API key</i> that authenticates the client to the Seq server.</param>
         /// <param name="bufferFileSizeLimitBytes">The maximum size, in bytes, to which the buffer
         /// log file for a specific date will be allowed to grow. By default no limit will be applied.</param>
+        /// <param name="failOverToDurable">True to failover to durable log shipper only when non-durable log shipping fails</param>
+        /// <param name="failoverRestrictedToMinimumLevel">Min level to send to failover.  Ex: Send Debug to non-durable, but only failover Error and higher to durable</param>
+        /// <param name="failOverDurablePeriod">Batching period for durable sink used for failover.  Null defaults to same as period.</param>
         /// <returns>Logger configuration, allowing configuration to continue.</returns>
         /// <exception cref="ArgumentNullException">A required parameter is null.</exception>
         public static LoggerConfiguration Seq(
@@ -50,19 +53,45 @@ namespace Serilog
             TimeSpan? period = null,
             string apiKey = null,
             string bufferBaseFilename = null,
-            long? bufferFileSizeLimitBytes = null)
+            long? bufferFileSizeLimitBytes = null,
+            bool failOverToDurable = false,
+            LogEventLevel failoverRestrictedToMinimumLevel = LevelAlias.Minimum,
+            TimeSpan? failOverDurablePeriod = null)
         {
             if (loggerSinkConfiguration == null) throw new ArgumentNullException("loggerSinkConfiguration");
             if (serverUrl == null) throw new ArgumentNullException("serverUrl");
             if (bufferFileSizeLimitBytes.HasValue && bufferFileSizeLimitBytes < 0) throw new ArgumentException("Negative value provided; file size limit must be non-negative");
 
             var defaultedPeriod = period ?? SeqSink.DefaultPeriod;
+            var failoverPeriod = failOverDurablePeriod ?? defaultedPeriod;
 
             ILogEventSink sink;
-            if (bufferBaseFilename == null)
+            if (failOverToDurable)
+            {
+                sink = new FailoverSeqSink(
+                    serverUrl,
+                    bufferBaseFilename,
+                    apiKey,
+                    batchPostingLimit,
+                    defaultedPeriod,
+                    bufferFileSizeLimitBytes,
+                    failoverPeriod,
+                    failoverRestrictedToMinimumLevel);
+            }
+            else if (bufferBaseFilename == null)
+            {
                 sink = new SeqSink(serverUrl, apiKey, batchPostingLimit, defaultedPeriod);
+            }
             else
-                sink = new DurableSeqSink(serverUrl, bufferBaseFilename, apiKey, batchPostingLimit, defaultedPeriod, bufferFileSizeLimitBytes);
+            {
+                sink = new DurableSeqSink(
+                    serverUrl,
+                    bufferBaseFilename,
+                    apiKey,
+                    batchPostingLimit,
+                    defaultedPeriod,
+                    bufferFileSizeLimitBytes);
+            }
 
             return loggerSinkConfiguration.Sink(sink, restrictedToMinimumLevel);
         }
