@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 using Serilog.Events;
@@ -8,6 +9,8 @@ namespace Serilog.Sinks.Seq
 {
     internal class FailoverSeqSink : SeqSink
     {
+        private readonly LogEventLevel _failoverRestrictedToMinimumLevel;
+
         private readonly Lazy<DurableSeqSink> _durableSink;
 
         public FailoverSeqSink(
@@ -21,6 +24,7 @@ namespace Serilog.Sinks.Seq
             LogEventLevel failoverRestrictedToMinimumLevel)
             : base(serverUrl, apiKey, batchPostingLimit, batchPeriod)
         {
+            _failoverRestrictedToMinimumLevel = failoverRestrictedToMinimumLevel;
             _durableSink =
                 new Lazy<DurableSeqSink>(
                     () =>
@@ -57,7 +61,7 @@ namespace Serilog.Sinks.Seq
 
         private void EmitToDurableSink(IEnumerable<LogEvent> events)
         {
-            foreach (var logEvent in events)
+            foreach (var logEvent in events.Where(logEvent => logEvent.Level >= _failoverRestrictedToMinimumLevel))
             {
                 _durableSink.Value.Emit(logEvent);
             }
