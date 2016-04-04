@@ -6,15 +6,33 @@ using Serilog.Events;
 
 namespace Serilog.Sinks.Seq
 {
-    class FailoverSeqSink : SeqSink
+    internal class FailoverSeqSink : SeqSink
     {
         private readonly Lazy<DurableSeqSink> _durableSink;
 
-        public FailoverSeqSink(string serverUrl, string bufferBaseFilename, string apiKey, int batchPostingLimit, TimeSpan batchPeriod, long? bufferFileSizeLimitBytes, TimeSpan durableShipperPeriod, LogEventLevel failoverRestrictedToMinimumLevel)
-            :base(serverUrl, apiKey, batchPostingLimit, batchPeriod)
+        public FailoverSeqSink(
+            string serverUrl,
+            string bufferBaseFilename,
+            string apiKey,
+            int batchPostingLimit,
+            TimeSpan batchPeriod,
+            long? bufferFileSizeLimitBytes,
+            TimeSpan durableShipperPeriod,
+            LogEventLevel failoverRestrictedToMinimumLevel)
+            : base(serverUrl, apiKey, batchPostingLimit, batchPeriod)
         {
-            _durableSink = new Lazy<DurableSeqSink>(() => new DurableSeqSink(serverUrl, bufferBaseFilename, apiKey, batchPostingLimit, durableShipperPeriod, bufferFileSizeLimitBytes));
+            _durableSink =
+                new Lazy<DurableSeqSink>(
+                    () =>
+                    new DurableSeqSink(
+                        serverUrl,
+                        bufferBaseFilename,
+                        apiKey,
+                        batchPostingLimit,
+                        durableShipperPeriod,
+                        bufferFileSizeLimitBytes));
         }
+
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
